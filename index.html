@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Solar Window Tint – East Chicago, IN</title>
+  <link href="https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@0,200;0,400;0,700;0,900;1,900&family=Inter:wght@300;400;500;600&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    :root {
+      --void:      #050507;
+      --deep:      #080a0f;
+      --panel:     #0d1018;
+      --card:      #0f1320;
+      --orange:    #ff6a00;
+      --amber:     #ffab00;
+      --orange-glow: rgba(255,106,0,0.2);
+      --orange-dim:  rgba(255,106,0,0.07);
+      --orange-border: rgba(255,106,0,0.22);
+      --white:     #f0f2f8;
+      --muted:     #6b7080;
+      --smoke:     rgba(240,242,248,0.06);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--void);
+      color: var(--white);
+      font-family: 'Inter', sans-serif;
+      font-weight: 300;
+      overflow-x: hidden;
+    }
+
+    /* scanline texture */
+    body::after {
+      content: '';
+      position: fixed; inset: 0;
+      background: repeating-linear-gradient(
+        0deg, transparent, transparent 2px,
+        rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px
+      );
+      pointer-events: none; z-index: 9998;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+      padding: 16px 5%;
+      display: flex; align-items: center; justify-content: space-between;
+      transition: all 0.4s;
+    }
+    nav.scrolled {
+      background: rgba(5,5,7,0.96);
+      border-bottom: 1px solid var(--orange-border);
+      backdrop-filter: blur(16px);
+    }
+    .nav-logo {
+      display: flex; align-items: center; gap: 10px;
+    }
+    .nav-logo-icon {
+      width: 36px; height: 36px;
+      background: linear-gradient(135deg, var(--orange), var(--amber));
+      clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.8rem; color: var(--void);
+      box-shadow: 0 0 20px var(--orange-glow);
+    }
+    .nav-logo-text {
+      font-family: 'Orbitron', monospace;
+      font-size: 1rem; font-weight: 700;
+      letter-spacing: 0.1em; color: var(--white);
+    }
+    .nav-logo-text span { color: var(--orange); }
+    .nav-links { display: flex; gap: 32px; list-style: none; }
+    .nav-links a {
+      color: var(--muted); text-decoration: none;
+      font-size: 0.72rem; letter-spacing: 0.15em; text-transform: uppercase;
+      font-weight: 500; transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--orange); }
+    .nav-cta {
+      background: linear-gradient(90deg, var(--orange), var(--amber));
+      color: var(--void); padding: 10px 22px;
+      font-size: 0.7rem; font-weight: 700; letter-spacing: 0.16em;
+      text-transform: uppercase; text-decoration: none;
+      clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+      transition: all 0.25s; box-shadow: 0 0 24px rgba(255,106,0,0.4);
+    }
+    .nav-cta:hover { box-shadow: 0 0 40px rgba(255,106,0,0.6); transform: translateY(-1px); }
+    .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; background: none; border: none; }
+    .hamburger span { width: 22px; height: 1.5px; background: var(--white); display: block; }
+
+    /* ── HERO ── */
+    #hero {
+      min-height: 100vh; position: relative;
+      display: flex; align-items: center; overflow: hidden;
+    }
+    .hero-bg {
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse 50% 80% at 100% 50%, rgba(255,106,0,0.12) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 0% 80%, rgba(255,171,0,0.05) 0%, transparent 55%),
+        linear-gradient(135deg, #050507 0%, #080a0f 100%);
+    }
+    /* tinted glass panels */
+    .glass-panel {
+      position: absolute; right: 0; top: 0; bottom: 0; width: 50%;
+      overflow: hidden;
+    }
+    .glass-pane {
+      position: absolute;
+      background: linear-gradient(135deg, rgba(255,106,0,0.04), rgba(255,171,0,0.02));
+      border-left: 1px solid rgba(255,106,0,0.12);
+    }
+    .glass-pane:nth-child(1) { inset: 0; clip-path: polygon(15% 0%, 100% 0%, 100% 100%, 0% 100%); }
+    .glass-pane:nth-child(2) { inset: 0; clip-path: polygon(30% 0%, 100% 0%, 100% 100%, 15% 100%); background: linear-gradient(135deg, rgba(255,106,0,0.06), rgba(255,171,0,0.03)); }
+    .glass-pane:nth-child(3) { inset: 0; clip-path: polygon(50% 0%, 100% 0%, 100% 100%, 35% 100%); background: linear-gradient(135deg, rgba(255,106,0,0.08), rgba(255,171,0,0.04)); }
+    .glass-lines {
+      position: absolute; inset: 0;
+      background-image: repeating-linear-gradient(
+        -55deg,
+        transparent, transparent 40px,
+        rgba(255,106,0,0.03) 40px, rgba(255,106,0,0.03) 41px
+      );
+    }
+    /* vertical glow line */
+    .hero-glow-line {
+      position: absolute; left: 50%; top: 0; bottom: 0; width: 1px;
+      background: linear-gradient(to bottom, transparent 0%, var(--orange) 40%, var(--amber) 60%, transparent 100%);
+      opacity: 0.3;
+    }
+    .hero-content {
+      position: relative; z-index: 2;
+      padding: 120px 5% 80px; max-width: 700px;
+    }
+    .hero-tag {
+      display: inline-flex; align-items: center; gap: 8px;
+      border: 1px solid var(--orange-border); background: var(--orange-dim);
+      padding: 5px 14px; margin-bottom: 28px;
+      font-size: 0.62rem; letter-spacing: 0.28em; text-transform: uppercase;
+      color: var(--amber);
+      clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%);
+      opacity: 0; animation: fadeUp 0.6s 0.2s forwards;
+    }
+    .hero-tag i { font-size: 0.55rem; }
+    .hero-eyeline {
+      font-family: 'Orbitron', monospace;
+      font-size: 0.65rem; letter-spacing: 0.3em; text-transform: uppercase;
+      color: var(--orange); margin-bottom: 14px;
+      opacity: 0; animation: fadeUp 0.6s 0.3s forwards;
+    }
+    .hero-title {
+      font-family: 'Exo 2', sans-serif;
+      font-weight: 900; font-style: italic;
+      font-size: clamp(3.8rem, 10vw, 8rem);
+      line-height: 0.88; letter-spacing: -0.02em;
+      color: var(--white);
+      opacity: 0; animation: fadeUp 0.8s 0.4s forwards;
+    }
+    .hero-title .line2 {
+      display: block;
+      -webkit-text-stroke: 1px rgba(255,106,0,0.5);
+      color: transparent;
+    }
+    .hero-title .line3 {
+      display: block; color: var(--orange);
+      text-shadow: 0 0 60px rgba(255,106,0,0.4);
+    }
+    .hero-sub {
+      font-size: 1rem; line-height: 1.85; color: var(--muted);
+      margin: 28px 0 40px; max-width: 480px;
+      opacity: 0; animation: fadeUp 0.7s 0.55s forwards;
+    }
+    .hero-sub strong { color: var(--amber); font-weight: 500; }
+    .hero-btns {
+      display: flex; gap: 14px; flex-wrap: wrap;
+      opacity: 0; animation: fadeUp 0.7s 0.7s forwards;
+    }
+    .btn-fire {
+      display: inline-flex; align-items: center; gap: 10px;
+      background: linear-gradient(90deg, var(--orange), var(--amber));
+      color: var(--void); padding: 15px 34px;
+      font-size: 0.72rem; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase;
+      text-decoration: none;
+      clip-path: polygon(10px 0%, 100% 0%, calc(100% - 10px) 100%, 0% 100%);
+      transition: all 0.25s; box-shadow: 0 6px 30px rgba(255,106,0,0.4);
+    }
+    .btn-fire:hover { box-shadow: 0 8px 50px rgba(255,106,0,0.6); transform: translateY(-2px); }
+    .btn-outline-fire {
+      display: inline-flex; align-items: center; gap: 10px;
+      border: 1px solid var(--orange-border); color: var(--white);
+      padding: 15px 34px; font-size: 0.72rem; font-weight: 500;
+      letter-spacing: 0.18em; text-transform: uppercase; text-decoration: none;
+      clip-path: polygon(10px 0%, 100% 0%, calc(100% - 10px) 100%, 0% 100%);
+      transition: all 0.25s;
+    }
+    .btn-outline-fire:hover { border-color: var(--orange); color: var(--orange); background: var(--orange-dim); }
+    .hero-stats {
+      display: flex; gap: 40px; margin-top: 56px;
+      opacity: 0; animation: fadeUp 0.7s 0.85s forwards;
+      padding-top: 40px; border-top: 1px solid rgba(255,106,0,0.1);
+    }
+    .hero-stat-val {
+      font-family: 'Orbitron', monospace;
+      font-size: 2rem; font-weight: 900; color: var(--orange); line-height: 1;
+    }
+    .hero-stat-label { font-size: 0.62rem; color: var(--muted); letter-spacing: 0.16em; text-transform: uppercase; margin-top: 6px; }
+
+    /* right side floating card */
+    .hero-float {
+      position: absolute; right: 5%; top: 50%; transform: translateY(-50%);
+      z-index: 3; display: flex; flex-direction: column; gap: 16px; align-items: flex-end;
+      opacity: 0; animation: fadeUp 0.8s 1s forwards;
+    }
+    .float-card {
+      background: rgba(13,16,24,0.85);
+      border: 1px solid var(--orange-border);
+      backdrop-filter: blur(12px);
+      padding: 20px 24px;
+      clip-path: polygon(12px 0%, 100% 0%, calc(100% - 12px) 100%, 0% 100%);
+      text-align: center; min-width: 140px;
+    }
+    .float-card-val {
+      font-family: 'Orbitron', monospace;
+      font-size: 2.2rem; font-weight: 900; color: var(--orange);
+      text-shadow: 0 0 20px rgba(255,106,0,0.5);
+    }
+    .float-card-stars { color: var(--orange); font-size: 0.6rem; letter-spacing: 2px; margin: 4px 0; }
+    .float-card-sub { font-size: 0.6rem; color: var(--muted); letter-spacing: 0.14em; text-transform: uppercase; }
+    .float-badge {
+      border: 1px solid var(--orange-border); background: var(--orange-dim);
+      padding: 10px 18px;
+      clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+      font-size: 0.65rem; color: var(--amber); letter-spacing: 0.16em; text-transform: uppercase;
+    }
+
+    /* ── SECTION BASE ── */
+    section { padding: 100px 5%; }
+    .eyebrow {
+      display: flex; align-items: center; gap: 10px;
+      font-family: 'Orbitron', monospace;
+      font-size: 0.6rem; letter-spacing: 0.3em; text-transform: uppercase;
+      color: var(--orange); margin-bottom: 16px;
+    }
+    .eyebrow::before { content: '//'; opacity: 0.5; }
+    .section-title {
+      font-family: 'Exo 2', sans-serif;
+      font-weight: 900; font-style: italic;
+      font-size: clamp(2rem, 5vw, 3.4rem);
+      line-height: 1.05; color: var(--white); margin-bottom: 18px;
+    }
+    .section-title span { color: var(--orange); }
+    .orange-rule {
+      width: 48px; height: 2px;
+      background: linear-gradient(90deg, var(--orange), var(--amber));
+      margin-bottom: 30px;
+    }
+
+    /* ── SERVICES ── */
+    #services { background: var(--deep); }
+    .services-intro { max-width: 520px; margin-bottom: 60px; }
+    .services-intro p { font-size: 0.92rem; color: var(--muted); line-height: 1.8; }
+    .services-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px;
+      background: var(--orange-border); max-width: 1100px;
+    }
+    .service-tile {
+      background: var(--void); padding: 40px 32px;
+      position: relative; overflow: hidden; transition: background 0.3s;
+    }
+    .service-tile::after {
+      content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, var(--orange), var(--amber));
+      transform: scaleX(0); transform-origin: left; transition: transform 0.4s;
+    }
+    .service-tile:hover { background: var(--panel); }
+    .service-tile:hover::after { transform: scaleX(1); }
+    .service-tile-num {
+      font-family: 'Orbitron', monospace;
+      font-size: 0.6rem; color: rgba(255,106,0,0.3); letter-spacing: 0.2em;
+      margin-bottom: 20px;
+    }
+    .service-tile-icon {
+      font-size: 1.8rem; color: var(--orange); margin-bottom: 18px;
+      filter: drop-shadow(0 0 10px rgba(255,106,0,0.4));
+    }
+    .service-tile-name {
+      font-family: 'Exo 2', sans-serif; font-weight: 700; font-style: italic;
+      font-size: 1.2rem; margin-bottom: 10px; color: var(--white);
+    }
+    .service-tile-desc { font-size: 0.83rem; color: var(--muted); line-height: 1.75; }
+
+    /* ── WHY DRAGON ── */
+    #why { background: var(--void); }
+    .why-layout {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 80px;
+      align-items: center; max-width: 1100px; margin: 0 auto;
+    }
+    .why-body p { font-size: 0.95rem; color: rgba(240,242,248,0.65); line-height: 1.9; margin-bottom: 18px; }
+    .why-body .lead {
+      font-family: 'Exo 2', sans-serif; font-style: italic; font-weight: 700;
+      font-size: 1.35rem; color: var(--white); line-height: 1.55; margin-bottom: 20px;
+    }
+    .why-tags { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 28px; }
+    .tag-chip {
+      display: flex; align-items: center; gap: 7px;
+      border: 1px solid var(--orange-border); background: var(--orange-dim);
+      padding: 7px 14px;
+      clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%);
+      font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--amber);
+    }
+    .tag-chip i { font-size: 0.6rem; color: var(--orange); }
+    .why-right { position: relative; }
+    .why-score-wrap {
+      background: var(--panel); border: 1px solid var(--orange-border);
+      padding: 44px 40px; position: relative;
+      clip-path: polygon(16px 0%, 100% 0%, calc(100% - 16px) 100%, 0% 100%);
+    }
+    .why-score-wrap::before {
+      content: 'DRAGON';
+      position: absolute; bottom: -8px; right: 20px;
+      font-family: 'Orbitron', monospace; font-size: 4rem; font-weight: 900;
+      color: rgba(255,106,0,0.04); letter-spacing: 0.1em; line-height: 1;
+      user-select: none; pointer-events: none;
+    }
+    .score-big {
+      font-family: 'Orbitron', monospace; font-size: 5rem; font-weight: 900;
+      color: var(--orange); line-height: 1;
+      text-shadow: 0 0 40px rgba(255,106,0,0.4);
+    }
+    .score-5 { font-size: 1.2rem; color: var(--muted); }
+    .score-stars-row { color: var(--orange); font-size: 0.95rem; letter-spacing: 3px; margin: 8px 0 6px; }
+    .score-reviews { font-size: 0.68rem; color: var(--muted); letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 36px; }
+    .score-sep { width: 100%; height: 1px; background: var(--orange-border); margin-bottom: 28px; opacity: 0.4; }
+    .score-facts { display: flex; flex-direction: column; gap: 12px; }
+    .score-fact { display: flex; align-items: flex-start; gap: 12px; font-size: 0.8rem; color: rgba(240,242,248,0.55); line-height: 1.5; }
+    .score-fact i { color: var(--orange); margin-top: 2px; font-size: 0.7rem; }
+
+    /* ── REVIEWS ── */
+    #reviews { background: var(--deep); }
+    .reviews-head {
+      display: flex; justify-content: space-between; align-items: flex-end;
+      margin-bottom: 52px; flex-wrap: wrap; gap: 20px;
+    }
+    .reviews-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; max-width: 1100px; }
+    .rev-card {
+      background: var(--void); border: 1px solid rgba(255,106,0,0.1);
+      padding: 32px 28px; position: relative; overflow: hidden;
+      transition: border-color 0.3s, transform 0.3s;
+    }
+    .rev-card:hover { border-color: var(--orange); transform: translateY(-5px); }
+    .rev-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, var(--orange), transparent);
+      opacity: 0; transition: opacity 0.3s;
+    }
+    .rev-card:hover::before { opacity: 1; }
+    .rev-quote {
+      font-family: 'Exo 2', sans-serif; font-size: 4rem; font-style: italic;
+      color: var(--orange); opacity: 0.15; line-height: 0.8; margin-bottom: 10px;
+    }
+    .rev-stars { color: var(--orange); font-size: 0.7rem; letter-spacing: 2px; margin-bottom: 14px; }
+    .rev-text {
+      font-size: 0.9rem; font-style: italic; line-height: 1.8;
+      color: rgba(240,242,248,0.75); margin-bottom: 26px;
+    }
+    .rev-author { display: flex; align-items: center; gap: 12px; }
+    .rev-avatar {
+      width: 36px; height: 36px; background: var(--orange-dim); border: 1px solid var(--orange-border);
+      clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Orbitron', monospace; font-size: 0.65rem; font-weight: 700; color: var(--orange);
+    }
+    .rev-name { font-size: 0.8rem; font-weight: 600; }
+    .rev-meta { font-size: 0.65rem; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; }
+    .rev-guide {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 0.58rem; color: var(--orange); letter-spacing: 0.1em; text-transform: uppercase;
+      margin-top: 4px;
+    }
+    .rev-guide i { font-size: 0.55rem; }
+    .reviews-cta { text-align: center; margin-top: 40px; }
+
+    /* ── HOURS ── */
+    #hours { background: var(--void); }
+    .hours-layout {
+      display: grid; grid-template-columns: 1.1fr 1fr; gap: 72px;
+      max-width: 1000px; margin: 0 auto; align-items: start;
+    }
+    .hours-table { width: 100%; border-collapse: collapse; }
+    .hours-table tr { border-bottom: 1px solid rgba(255,106,0,0.07); }
+    .hours-table tr:last-child { border-bottom: none; }
+    .hours-table td { padding: 14px 0; font-size: 0.84rem; }
+    .hours-table td:first-child { font-size: 0.7rem; color: var(--muted); letter-spacing: 0.14em; text-transform: uppercase; }
+    .hours-table td:last-child { text-align: right; color: var(--white); }
+    .hours-table tr.today td { color: var(--orange) !important; font-weight: 600; }
+    .hours-note {
+      margin-top: 18px; padding: 14px 18px;
+      border-left: 2px solid var(--orange); background: var(--orange-dim);
+      font-size: 0.76rem; color: var(--muted); line-height: 1.65;
+    }
+    .hours-note strong { color: var(--amber); }
+    .info-stack { display: flex; flex-direction: column; gap: 18px; }
+    .info-tile {
+      background: var(--panel); border: 1px solid rgba(255,106,0,0.1);
+      padding: 22px 26px; display: flex; align-items: flex-start; gap: 16px;
+      clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+      transition: border-color 0.3s;
+    }
+    .info-tile:hover { border-color: var(--orange); }
+    .info-tile-icon { color: var(--orange); font-size: 0.9rem; margin-top: 2px; }
+    .info-tile-label { font-size: 0.58rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--muted); margin-bottom: 5px; font-family: 'Orbitron', monospace; }
+    .info-tile-val { font-size: 0.9rem; color: var(--white); line-height: 1.55; }
+    .info-tile-val a { color: var(--amber); text-decoration: none; }
+    .info-tile-val a:hover { color: var(--orange); }
+    .feat-row { display: flex; flex-direction: column; gap: 8px; }
+    .feat-row-item { display: flex; align-items: center; gap: 9px; font-size: 0.78rem; color: rgba(240,242,248,0.55); }
+    .feat-row-item i { color: var(--orange); font-size: 0.62rem; }
+
+    /* ── FIRST COME FIRST SERVE BANNER ── */
+    .fcfs-banner {
+      background: linear-gradient(90deg, var(--orange), var(--amber), var(--orange));
+      background-size: 200% 100%;
+      animation: gradShift 4s linear infinite;
+      padding: 14px 5%; text-align: center;
+    }
+    @keyframes gradShift { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; } }
+    .fcfs-banner p {
+      font-family: 'Orbitron', monospace; font-size: 0.68rem;
+      letter-spacing: 0.28em; text-transform: uppercase;
+      color: var(--void); font-weight: 700;
+    }
+
+    /* ── MAP ── */
+    #location { background: var(--deep); }
+    .location-layout {
+      display: grid; grid-template-columns: 1fr 1.3fr; gap: 60px;
+      align-items: center; max-width: 1100px; margin: 0 auto;
+    }
+    .location-address {
+      font-family: 'Exo 2', sans-serif; font-weight: 700; font-style: italic;
+      font-size: 1.6rem; line-height: 1.3; margin-bottom: 10px;
+    }
+    .location-city { font-size: 0.85rem; color: var(--muted); letter-spacing: 0.1em; margin-bottom: 24px; }
+    .location-phone {
+      font-family: 'Orbitron', monospace; font-size: 1.9rem; font-weight: 700;
+      color: var(--orange); text-decoration: none; display: block; margin-bottom: 32px;
+      text-shadow: 0 0 30px rgba(255,106,0,0.4); transition: color 0.2s;
+    }
+    .location-phone:hover { color: var(--amber); }
+    .loc-btns { display: flex; flex-direction: column; gap: 12px; }
+    .map-embed {
+      width: 100%; height: 390px;
+      border: 1px solid var(--orange-border);
+      filter: saturate(0.2) brightness(0.6) contrast(1.3) hue-rotate(15deg);
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      background: #030305; border-top: 1px solid rgba(255,106,0,0.12);
+      padding: 56px 5% 32px;
+    }
+    .footer-inner {
+      max-width: 1100px; margin: 0 auto;
+      display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 40px;
+      margin-bottom: 44px;
+    }
+    .footer-brand {
+      font-family: 'Orbitron', monospace; font-size: 1.1rem; font-weight: 700;
+      color: var(--white); letter-spacing: 0.12em; margin-bottom: 6px;
+    }
+    .footer-brand span { color: var(--orange); }
+    .footer-tagline { font-size: 0.78rem; color: var(--muted); line-height: 1.75; margin-top: 8px; }
+    .footer-col-head { font-family: 'Orbitron', monospace; font-size: 0.58rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--orange); margin-bottom: 18px; }
+    .footer-nav { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+    .footer-nav a { color: var(--muted); text-decoration: none; font-size: 0.82rem; transition: color 0.2s; }
+    .footer-nav a:hover { color: var(--orange); }
+    .footer-contact-row { display: flex; align-items: flex-start; gap: 10px; font-size: 0.8rem; color: var(--muted); margin-bottom: 12px; line-height: 1.5; }
+    .footer-contact-row i { color: var(--orange); margin-top: 2px; font-size: 0.72rem; }
+    .footer-bottom {
+      border-top: 1px solid rgba(255,106,0,0.08); padding-top: 24px; text-align: center;
+      font-size: 0.62rem; color: rgba(107,112,128,0.5); letter-spacing: 0.14em;
+    }
+    .dragon-credit { color: var(--orange); opacity: 0.5; }
+
+    /* ── ANIMATIONS ── */
+    .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.75s ease, transform 0.75s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .d1 { transition-delay: 0.1s; } .d2 { transition-delay: 0.2s; } .d3 { transition-delay: 0.3s; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* mob menu */
+    .mob-menu {
+      display: none; position: fixed; inset: 0;
+      background: rgba(3,3,5,0.98); z-index: 199;
+      flex-direction: column; align-items: center; justify-content: center; gap: 30px;
+    }
+    .mob-menu.open { display: flex; }
+    .mob-menu a { font-family: 'Orbitron', monospace; font-size: 1.4rem; font-weight: 700; color: var(--white); text-decoration: none; letter-spacing: 0.1em; }
+    .mob-menu a:hover { color: var(--orange); }
+    .mob-close { position: absolute; top: 22px; right: 5%; font-size: 1.4rem; color: var(--muted); cursor: pointer; background: none; border: none; }
+
+    /* ── GALLERY ── */
+    #gallery { background: var(--void); padding: 100px 0; }
+    .gallery-header { padding: 0 5%; margin-bottom: 48px; display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 20px; }
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      grid-template-rows: 240px 240px;
+      gap: 4px;
+      max-width: 100%;
+    }
+    .gallery-item {
+      overflow: hidden; position: relative; cursor: pointer;
+      background: var(--panel);
+    }
+    .gallery-item img {
+      width: 100%; height: 100%; object-fit: cover;
+      filter: brightness(0.75) saturate(0.6);
+      transition: filter 0.5s ease, transform 0.6s ease;
+      display: block;
+    }
+    .gallery-item:hover img { filter: brightness(0.9) saturate(1.1); transform: scale(1.06); }
+    .gallery-item .overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(5,5,7,0.7) 0%, transparent 50%);
+      opacity: 0; transition: opacity 0.4s;
+      display: flex; align-items: flex-end; padding: 18px;
+    }
+    .gallery-item:hover .overlay { opacity: 1; }
+    .overlay-label {
+      font-family: 'Orbitron', monospace; font-size: 0.6rem;
+      letter-spacing: 0.2em; text-transform: uppercase; color: var(--amber);
+    }
+    /* layout spans */
+    .g1 { grid-column: span 5; grid-row: span 2; }
+    .g2 { grid-column: span 4; }
+    .g3 { grid-column: span 3; }
+    .g4 { grid-column: span 3; }
+    .g5 { grid-column: span 4; }
+    /* orange tint overlay on hover */
+    .gallery-item::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(255,106,0,0.12), transparent);
+      opacity: 0; transition: opacity 0.4s; pointer-events: none;
+    }
+    .gallery-item:hover::after { opacity: 1; }
+    /* lightbox */
+    .lightbox {
+      display: none; position: fixed; inset: 0; z-index: 500;
+      background: rgba(3,3,5,0.96); align-items: center; justify-content: center;
+    }
+    .lightbox.open { display: flex; }
+    .lightbox-inner { position: relative; max-width: 90vw; max-height: 90vh; }
+    .lightbox-inner img { max-width: 90vw; max-height: 85vh; object-fit: contain; border: 1px solid var(--orange-border); }
+    .lightbox-close {
+      position: absolute; top: -36px; right: 0;
+      font-size: 1.2rem; color: var(--muted); cursor: pointer;
+      background: none; border: none; transition: color 0.2s;
+    }
+    .lightbox-close:hover { color: var(--orange); }
+    .lightbox-caption {
+      font-family: 'Orbitron', monospace; font-size: 0.6rem; letter-spacing: 0.2em;
+      color: var(--muted); text-transform: uppercase; margin-top: 12px; text-align: center;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 960px) {
+      .why-layout, .location-layout, .hours-layout, .footer-inner { grid-template-columns: 1fr; gap: 40px; }
+      .services-grid, .reviews-grid { grid-template-columns: 1fr; }
+      .gallery-grid { grid-template-columns: 1fr 1fr; grid-template-rows: auto; }
+      .g1, .g2, .g3, .g4, .g5 { grid-column: span 1; grid-row: span 1; height: 200px; }
+      .hero-float { display: none; }
+      .nav-links, .nav-cta { display: none; }
+      .hamburger { display: flex; }
+      .hero-stats { gap: 24px; flex-wrap: wrap; }
+    }
+    @media (max-width: 600px) {
+      section { padding: 70px 5%; }
+      .hero-btns { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- FIRST COME BANNER -->
+<div class="fcfs-banner">
+  <p>⚡ First Come · First Serve · Fast Service · Great Prices ⚡</p>
+</div>
+
+<!-- NAV -->
+<nav id="mainNav">
+  <div class="nav-logo">
+    <div class="nav-logo-icon"><i class="fas fa-sun"></i></div>
+    <div class="nav-logo-text"><span>Solar</span> Tint</div>
+  </div>
+  <ul class="nav-links">
+    <li><a href="#services">Services</a></li>
+    <li><a href="#why">About</a></li>
+    <li><a href="#reviews">Reviews</a></li>
+    <li><a href="#hours">Hours</a></li>
+    <li><a href="#location">Location</a></li>
+  </ul>
+  <a href="tel:2193980990" class="nav-cta"><i class="fas fa-phone" style="font-size:0.6rem;"></i> Call Now</a>
+  <button class="hamburger" onclick="openMob()"><span></span><span></span><span></span></button>
+</nav>
+
+<!-- MOB MENU -->
+<div class="mob-menu" id="mobMenu">
+  <button class="mob-close" onclick="closeMob()"><i class="fas fa-times"></i></button>
+  <a href="#services" onclick="closeMob()">Services</a>
+  <a href="#why" onclick="closeMob()">About</a>
+  <a href="#reviews" onclick="closeMob()">Reviews</a>
+  <a href="#hours" onclick="closeMob()">Hours</a>
+  <a href="#location" onclick="closeMob()">Location</a>
+  <a href="tel:2193980990" class="btn-fire" onclick="closeMob()"><i class="fas fa-phone"></i> Call Now</a>
+</div>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-bg"></div>
+  <div class="glass-panel">
+    <div class="glass-pane"></div>
+    <div class="glass-pane"></div>
+    <div class="glass-pane"></div>
+    <div class="glass-lines"></div>
+  </div>
+  <div class="hero-glow-line"></div>
+
+  <div class="hero-content">
+    <div class="hero-tag"><i class="fas fa-map-marker-alt"></i> East Chicago, Indiana · Est. In the Community</div>
+    <div class="hero-eyeline">Window Tinting Specialists</div>
+    <h1 class="hero-title">
+      Solar<span class="line2">Window</span><span class="line3">Tint</span>
+    </h1>
+    <p class="hero-sub">
+      Expert tinting cut <strong>by hand</strong> to perfection. From sedans to semi-trucks — no job too big, no job too small. Ask for <strong>Dragon</strong>.
+    </p>
+    <div class="hero-btns">
+      <a href="tel:2193980990" class="btn-fire"><i class="fas fa-phone"></i> Call Dragon Now</a>
+      <a href="#services" class="btn-outline-fire"><i class="fas fa-film"></i> Our Services</a>
+    </div>
+    <div class="hero-stats">
+      <div>
+        <div class="hero-stat-val">4.3</div>
+        <div class="hero-stat-label">Star Rating</div>
+      </div>
+      <div>
+        <div class="hero-stat-val">76+</div>
+        <div class="hero-stat-label">Reviews</div>
+      </div>
+      <div>
+        <div class="hero-stat-val">20+</div>
+        <div class="hero-stat-label">Yrs Experience</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-float">
+    <div class="float-card">
+      <div class="float-card-val">4.3</div>
+      <div class="float-card-stars">★★★★☆</div>
+      <div class="float-card-sub">Google Rating</div>
+    </div>
+    <div class="float-badge"><i class="fas fa-bolt"></i> &nbsp;Fast Service</div>
+    <div class="float-badge"><i class="fas fa-dollar-sign"></i> &nbsp;Great Prices</div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section id="services">
+  <div class="services-intro reveal">
+    <div class="eyebrow">What We Do</div>
+    <h2 class="section-title">Hand-Cut. <span>Precision</span> Installed.</h2>
+    <div class="orange-rule"></div>
+    <p>Every tint job at Solar Window Tint is cut by hand — not by machine. That means a perfect fit on every curve, every window, every vehicle. The way it's been done since 2001.</p>
+  </div>
+  <div class="services-grid">
+    <div class="service-tile reveal">
+      <div class="service-tile-num">01</div>
+      <div class="service-tile-icon"><i class="fas fa-car"></i></div>
+      <div class="service-tile-name">Automotive Tinting</div>
+      <p class="service-tile-desc">Cars, trucks, SUVs — all hand-cut to fit your exact windows. Clean edges, zero peeling, zero bubbles when done right.</p>
+    </div>
+    <div class="service-tile reveal d1">
+      <div class="service-tile-num">02</div>
+      <div class="service-tile-icon"><i class="fas fa-truck"></i></div>
+      <div class="service-tile-name">Commercial Vehicles</div>
+      <p class="service-tile-desc">Kenworth T800s, dump trucks, fleet vehicles — Dragon handles what competitors turn away. No job is too big.</p>
+    </div>
+    <div class="service-tile reveal d2">
+      <div class="service-tile-num">03</div>
+      <div class="service-tile-icon"><i class="fas fa-home"></i></div>
+      <div class="service-tile-name">Residential Tinting</div>
+      <p class="service-tile-desc">Keep your home cooler, reduce glare, and protect your furniture from UV damage with professional residential window film.</p>
+    </div>
+    <div class="service-tile reveal">
+      <div class="service-tile-num">04</div>
+      <div class="service-tile-icon"><i class="fas fa-building"></i></div>
+      <div class="service-tile-name">Commercial Buildings</div>
+      <p class="service-tile-desc">Office windows, storefronts, and commercial properties — reduce energy costs and improve privacy with quality film.</p>
+    </div>
+    <div class="service-tile reveal d1">
+      <div class="service-tile-num">05</div>
+      <div class="service-tile-icon"><i class="fas fa-sun"></i></div>
+      <div class="service-tile-name">UV & Heat Rejection</div>
+      <p class="service-tile-desc">Block harmful UV rays and cut down heat buildup inside your vehicle or space. Stay cool, stay protected.</p>
+    </div>
+    <div class="service-tile reveal d2">
+      <div class="service-tile-num">06</div>
+      <div class="service-tile-icon"><i class="fas fa-eye-slash"></i></div>
+      <div class="service-tile-name">Privacy & Security Film</div>
+      <p class="service-tile-desc">One-way privacy film, security tint, and decorative films for added protection and peace of mind.</p>
+    </div>
+  </div>
+</section>
+
+<!-- WHY DRAGON -->
+<section id="why">
+  <div class="why-layout">
+    <div class="why-body reveal">
+      <div class="eyebrow">The Dragon Difference</div>
+      <h2 class="section-title">Old School <span>Cool.</span><br>New School Precision.</h2>
+      <div class="orange-rule"></div>
+      <p class="lead">"My man Dragon has done all my cars since 2001." — That kind of loyalty isn't bought. It's earned, one perfect cut at a time.</p>
+      <p>Solar Window Tint is built on a simple promise: show up, do the job right, charge a fair price, and treat every customer like they matter. Dragon hand-cuts every tint to ensure a perfect fit — no shortcuts, no templates, no headaches.</p>
+      <p>From a sedan to a semi, from a home window to a storefront — Dragon and his team bring that same care and craftsmanship to every single job.</p>
+      <div class="why-tags">
+        <div class="tag-chip"><i class="fas fa-cut"></i> Hand-Cut Tint</div>
+        <div class="tag-chip"><i class="fas fa-bolt"></i> Fast Turnaround</div>
+        <div class="tag-chip"><i class="fas fa-dollar-sign"></i> Great Prices</div>
+        <div class="tag-chip"><i class="fas fa-smile"></i> Friendly Service</div>
+        <div class="tag-chip"><i class="fas fa-truck"></i> All Vehicle Sizes</div>
+        <div class="tag-chip"><i class="fas fa-child"></i> Good for Kids</div>
+      </div>
+    </div>
+    <div class="why-right reveal d2">
+      <div class="why-score-wrap">
+        <div class="score-big">4.3<span class="score-5"> /5</span></div>
+        <div class="score-stars-row">★★★★☆</div>
+        <div class="score-reviews">76 Google Reviews</div>
+        <div class="score-sep"></div>
+        <div class="score-facts">
+          <div class="score-fact"><i class="fas fa-map-marker-alt"></i> 4145 Indianapolis Blvd, East Chicago, IN 46312</div>
+          <div class="score-fact"><i class="fas fa-phone"></i> (219) 398-0990</div>
+          <div class="score-fact"><i class="fas fa-clock"></i> First Come, First Serve — Opens 9 AM</div>
+          <div class="score-fact"><i class="fas fa-car"></i> Cars · Trucks · Semis · Commercial · Residential</div>
+          <div class="score-fact"><i class="fas fa-user"></i> Ask for Dragon — Serving the community since 2001</div>
+          <div class="score-fact"><i class="fas fa-restroom"></i> Restroom Available · Kid Friendly</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- REVIEWS -->
+<section id="reviews">
+  <div class="reviews-head reveal">
+    <div>
+      <div class="eyebrow">What Customers Say</div>
+      <h2 class="section-title">Straight From the <span>Street</span></h2>
+    </div>
+    <a href="https://maps.google.com" target="_blank" class="btn-outline-fire" style="white-space:nowrap;">
+      <i class="fab fa-google"></i> All 76 Reviews
+    </a>
+  </div>
+  <div class="reviews-grid">
+    <div class="rev-card reveal">
+      <div class="rev-quote">"</div>
+      <div class="rev-stars">★★★★★</div>
+      <p class="rev-text">Very nice work, fast and friendly service, reasonably priced. Exactly what you want from a tint shop — no drama, just quality.</p>
+      <div class="rev-author">
+        <div class="rev-avatar">A</div>
+        <div>
+          <div class="rev-name">Satisfied Customer</div>
+          <div class="rev-meta">Google Review</div>
+        </div>
+      </div>
+    </div>
+    <div class="rev-card reveal d1">
+      <div class="rev-quote">"</div>
+      <div class="rev-stars">★★★★★</div>
+      <p class="rev-text">Guy is old school cool and hand cuts his tint to perfection. Tinted my Kenworth T800 dump truck effortlessly — competitors either wanted double the price or claimed they couldn't do it.</p>
+      <div class="rev-author">
+        <div class="rev-avatar">J</div>
+        <div>
+          <div class="rev-name">JCAL219</div>
+          <div class="rev-meta">Google Review</div>
+          <div class="rev-guide"><i class="fas fa-map-marked-alt"></i> Local Guide · 54 reviews</div>
+        </div>
+      </div>
+    </div>
+    <div class="rev-card reveal d2">
+      <div class="rev-quote">"</div>
+      <div class="rev-stars">★★★★★</div>
+      <p class="rev-text">My man Dragon has done all my cars since 2001. Here are just a few he had done — love this guy's work. Thanks Dragon.</p>
+      <div class="rev-author">
+        <div class="rev-avatar">J</div>
+        <div>
+          <div class="rev-name">J. R.</div>
+          <div class="rev-meta">Google Review · Loyal since 2001</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="reviews-cta reveal">
+    <a href="https://maps.google.com" target="_blank" class="btn-outline-fire">
+      <i class="fab fa-google"></i> View All 76 Reviews on Google
+    </a>
+  </div>
+</section>
+
+<!-- HOURS -->
+<section id="hours">
+  <div class="hours-layout">
+    <div class="reveal">
+      <div class="eyebrow">We're Open</div>
+      <h2 class="section-title">Hours & <span>Info</span></h2>
+      <div class="orange-rule"></div>
+      <table class="hours-table">
+        <tbody>
+          <tr id="row-mon"><td>Monday</td><td>9:00 AM – Close</td></tr>
+          <tr id="row-tue"><td>Tuesday</td><td>9:00 AM – Close</td></tr>
+          <tr id="row-wed"><td>Wednesday</td><td>9:00 AM – Close</td></tr>
+          <tr id="row-thu"><td>Thursday</td><td>9:00 AM – Close</td></tr>
+          <tr id="row-fri"><td>Friday</td><td>9:00 AM – Close</td></tr>
+          <tr id="row-sat"><td>Saturday</td><td>9:00 AM – Close</td></tr>
+          <tr id="row-sun"><td>Sunday</td><td>Closed</td></tr>
+        </tbody>
+      </table>
+      <div class="hours-note">
+        <i class="fas fa-bolt" style="color:var(--orange);margin-right:8px;"></i>
+        <strong>First come, first serve</strong> — no appointments needed. Call <strong>(219) 398-0990</strong> to confirm today's hours or availability.
+      </div>
+    </div>
+    <div class="info-stack reveal d2">
+      <div class="info-tile">
+        <i class="fas fa-map-marker-alt info-tile-icon"></i>
+        <div>
+          <div class="info-tile-label">Address</div>
+          <div class="info-tile-val">4145 Indianapolis Blvd<br>East Chicago, IN 46312</div>
+        </div>
+      </div>
+      <div class="info-tile">
+        <i class="fas fa-phone info-tile-icon"></i>
+        <div>
+          <div class="info-tile-label">Phone</div>
+          <div class="info-tile-val"><a href="tel:2193980990">(219) 398-0990</a></div>
+        </div>
+      </div>
+      <div class="info-tile">
+        <i class="fas fa-info-circle info-tile-icon"></i>
+        <div>
+          <div class="info-tile-label">Amenities</div>
+          <div class="info-tile-val">
+            <div class="feat-row">
+              <div class="feat-row-item"><i class="fas fa-check"></i> First Come, First Serve</div>
+              <div class="feat-row-item"><i class="fas fa-check"></i> Good for Kids & Families</div>
+              <div class="feat-row-item"><i class="fas fa-check"></i> Restroom Available</div>
+              <div class="feat-row-item"><i class="fas fa-check"></i> All Vehicle Sizes Welcome</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- LOCATION / MAP -->
+<section id="location">
+  <div class="location-layout">
+    <div class="reveal">
+      <div class="eyebrow">Find Us</div>
+      <div class="location-address">4145 Indianapolis Blvd,<br>East Chicago, IN 46312</div>
+      <div class="location-city"><i class="fas fa-map-marker-alt" style="color:var(--orange);margin-right:6px;"></i>East Chicago, Indiana · Serving the Region</div>
+      <a href="tel:2193980990" class="location-phone">(219) 398-0990</a>
+      <div class="loc-btns">
+        <a href="https://www.google.com/maps/dir/?api=1&destination=4145+Indianapolis+Blvd+East+Chicago+IN+46312" target="_blank" class="btn-fire">
+          <i class="fas fa-directions"></i> Get Directions
+        </a>
+        <a href="tel:2193980990" class="btn-outline-fire">
+          <i class="fas fa-phone"></i> Call Now
+        </a>
+      </div>
+    </div>
+    <div class="reveal d2">
+      <iframe
+        class="map-embed"
+        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2973!2d-87.4563!3d41.6528!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8811d83d9b9b9b9b%3A0x0!2s4145+Indianapolis+Blvd%2C+East+Chicago%2C+IN+46312!5e0!3m2!1sen!2sus!4v1700000000000"
+        allowfullscreen="" loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade">
+      </iframe>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div>
+      <div class="footer-brand"><span>Solar</span> Window Tint</div>
+      <div class="footer-tagline">Hand-cut window tinting for cars, trucks, semis, homes & commercial buildings. Fast service. Great prices. Ask for Dragon.</div>
+    </div>
+    <div>
+      <div class="footer-col-head">Navigate</div>
+      <ul class="footer-nav">
+        <li><a href="#services">Services</a></li>
+        <li><a href="#why">About Dragon</a></li>
+        <li><a href="#reviews">Reviews</a></li>
+        <li><a href="#hours">Hours</a></li>
+        <li><a href="#location">Location</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-head">Contact</div>
+      <div class="footer-contact-row"><i class="fas fa-map-marker-alt"></i> 4145 Indianapolis Blvd, East Chicago, IN 46312</div>
+      <div class="footer-contact-row"><i class="fas fa-phone"></i> <a href="tel:2193980990" style="color:inherit;text-decoration:none;">(219) 398-0990</a></div>
+      <div class="footer-contact-row"><i class="fas fa-clock"></i> First Come, First Serve · Opens 9 AM</div>
+      <div class="footer-contact-row"><i class="fas fa-user"></i> Ask for <span style="color:var(--orange);">Dragon</span></div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    © 2025 Solar Window Tint · 4145 Indianapolis Blvd, East Chicago, IN 46312 · (219) 398-0990
+    &nbsp;·&nbsp; <span class="dragon-credit">Powered by Dragon &#128293;</span>
+  </div>
+</footer>
+
+<script>
+  // NAV
+  const nav = document.getElementById('mainNav');
+  window.addEventListener('scroll', () => nav.classList.toggle('scrolled', window.scrollY > 60));
+
+  // MOB MENU
+  function openMob()  { document.getElementById('mobMenu').classList.add('open'); }
+  function closeMob() { document.getElementById('mobMenu').classList.remove('open'); }
+
+  // TODAY HIGHLIGHT
+  const days = ['sun','mon','tue','wed','thu','fri','sat'];
+  const today = days[new Date().getDay()];
+  const todayRow = document.getElementById('row-' + today);
+  if (todayRow) todayRow.classList.add('today');
+
+  // SCROLL REVEAL
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+</script>
+</body>
+</html>
